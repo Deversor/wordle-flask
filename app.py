@@ -27,13 +27,13 @@ except RuntimeError: # if the corpora (word lists) arent downloaded
     word_list = [word.lower() for word in combined_word_list if len(word) == 5 and word.isalpha()]
 
 
-@app.route('/words')
-def words_page():
-    return render_template('words.html')
-
 @app.route('/') # base route
 def index():
     return render_template('index.html')
+
+@app.route('/words')
+def words_page():
+    return render_template('words.html')
 
 @app.route('/word_api', methods=['GET'])
 def word_api():
