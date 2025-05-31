@@ -27,6 +27,9 @@ except RuntimeError: # if the corpora (word lists) arent downloaded
     word_list = [word.lower() for word in combined_word_list if len(word) == 5 and word.isalpha()]
 
 
+@app.route('/words')
+def words_page():
+    return render_template('words.html')
 
 @app.route('/') # base route
 def index():
@@ -45,9 +48,7 @@ def check():
 
     return jsonify({"is_in_word_list" : is_in_word_list})
 
-@app.route('/words')
-def words_page():
-    return render_template('words.html')
+
 
 
 if __name__ == '__main__':
