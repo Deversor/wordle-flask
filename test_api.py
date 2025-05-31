@@ -1,7 +1,15 @@
 import json
+import os 
 import pytest
 from app import app
 
+WORDS_FILE = 'words.json'
+
+@pytest.fixture(autouse=True)
+def reset_words_file():
+    with open(WORDS_FILE, 'w') as f:
+        json.dump([], f)
+        
 @pytest.fixture
 def client():
     app.config['TESTING'] = True

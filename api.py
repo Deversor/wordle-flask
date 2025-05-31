@@ -5,6 +5,11 @@ import os
 api = Blueprint('api', __name__)
 WORDS_FILE = 'words.json'
 
+def init_words_file():
+    if not os.path.exists(WORDS_FILE):
+        with open(WORDS_FILE, 'w') as f:
+            json.dump([], f)
+
 def load_words():
     if os.path.exists(WORDS_FILE):
         with open(WORDS_FILE) as f:
@@ -28,7 +33,7 @@ def get_word(word):
 
 @api.route('/api/words', methods=['POST'])
 def add_word():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     word = data.get('word')
     if not word:
         return jsonify({'error': 'Word is required'}), 400
@@ -39,15 +44,16 @@ def add_word():
     save_words(words)
     return jsonify({'message': 'Word added'}), 201
 
+
 @api.route('/api/words/<string:old_word>', methods=['PUT'])
 def update_word(old_word):
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     new_word = data.get('word')
+    if not new_word:
+        return jsonify({'error': 'New word is required'}), 400
     words = load_words()
     if old_word not in words:
         return jsonify({'error': 'Original word not found'}), 404
-    if not new_word:
-        return jsonify({'error': 'New word is required'}), 400
     idx = words.index(old_word)
     words[idx] = new_word
     save_words(words)
@@ -61,3 +67,7 @@ def delete_word(word):
     words.remove(word)
     save_words(words)
     return jsonify({'message': 'Word deleted'}), 200
+
+
+
+init_words_file()

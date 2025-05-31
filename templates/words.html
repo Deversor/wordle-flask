@@ -1,49 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Word List Manager</title>
+  <title>Word Manager</title>
 </head>
 <body>
-    <h1>Manage Word List</h1>
-    <form id="addForm">
-        <input type="text" id="newWord" placeholder="Enter word" required>
-        <button type="submit">Add</button>
-    </form>
-    <ul id="wordList"></ul>
+  <h1>Word List (CRUD Feature)</h1>
 
-    <script>
-        async function fetchWords() {
-            const res = await fetch('/api/words');
-            const words = await res.json();
-            const list = document.getElementById('wordList');
-            list.innerHTML = '';
-            words.forEach(word => {
-                const li = document.createElement('li');
-                li.textContent = word + " ";
-                const del = document.createElement('button');
-                del.textContent = "Delete";
-                del.onclick = async () => {
-                    await fetch(`/api/words/${word}`, { method: 'DELETE' });
-                    fetchWords();
-                };
-                li.appendChild(del);
-                list.appendChild(li);
-            });
-        }
+  <!-- Create -->
+  <h3>Add a Word</h3>
+  <input type="text" id="newWord" placeholder="Enter a new word">
+  <button onclick="addWord()">Add</button>
 
-        document.getElementById('addForm').onsubmit = async e => {
-            e.preventDefault();
-            const word = document.getElementById('newWord').value;
-            await fetch('/api/words', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ word })
-            });
-            document.getElementById('newWord').value = '';
-            fetchWords();
-        };
+  <!-- Read -->
+  <h3>Word List</h3>
+  <ul id="wordList"></ul>
 
-        fetchWords();
-    </script>
+  <!-- Update -->
+  <h3>Update a Word</h3>
+  <input type="text" id="oldWord" placeholder="Old word">
+  <input type="text" id="updatedWord" placeholder="New word">
+  <button onclick="updateWord()">Update</button>
+
+  <!-- Delete -->
+  <h3>Delete a Word</h3>
+  <input type="text" id="deleteWord" placeholder="Word to delete">
+  <button onclick="deleteWord()">Delete</button>
+
+  <script>
+    async function fetchWords() {
+      const res = await fetch('/api/words');
+      const words = await res.json();
+      const list = document.getElementById('wordList');
+      list.innerHTML = '';
+      words.forEach(word => {
+        const li = document.createElement('li');
+        li.textContent = word;
+        list.appendChild(li);
+      });
+    }
+
+    async function addWord() {
+      const word = document.getElementById('newWord').value;
+      const res = await fetch('/api/words', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({word})
+      });
+      const data = await res.json();
+      alert(data.message || data.error);
+      fetchWords();
+    }
+
+    async function updateWord() {
+      const oldWord = document.getElementById('oldWord').value;
+      const newWord = document.getElementById('updatedWord').value;
+      const res = await fetch(`/api/words/${oldWord}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({word: newWord})
+      });
+      const data = await res.json();
+      alert(data.message || data.error);
+      fetchWords();
+    }
+
+    async function deleteWord() {
+      const word = document.getElementById('deleteWord').value;
+      const res = await fetch(`/api/words/${word}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      alert(data.message || data.error);
+      fetchWords();
+    }
+
+    // Load the words when the page opens
+    fetchWords();
+  </script>
 </body>
 </html>

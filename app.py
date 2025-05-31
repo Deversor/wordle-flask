@@ -16,8 +16,8 @@ try:
     word_list = [word.lower() for word in combined_word_list if len(word) == 5 and word.isalpha()]
 
 except RuntimeError: # if the corpora (word lists) arent downloaded
-    nltk.download(brown)
-    nltk.download(words)
+    nltk.download('brown')
+    nltk.download('words')
 
     brown_words = set(brown.words())
 
