@@ -1,12 +1,12 @@
 from flask import Flask, render_template, jsonify, request
-
+from api import api
 import nltk, random
 from nltk.corpus import brown, words
 
 
-
 app = Flask(__name__)
 
+app.register_blueprint(api)
 try:
     brown_words = set(brown.words())
 
@@ -44,6 +44,11 @@ def check():
     is_in_word_list = word in word_list
 
     return jsonify({"is_in_word_list" : is_in_word_list})
+
+@app.route('/words')
+def words_page():
+    return render_template('words.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
