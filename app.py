@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request
 from api import api
 import nltk, random
 from nltk.corpus import brown, words
-
+import json
 
 app = Flask(__name__)
 
@@ -44,10 +44,20 @@ def word_api():
 def check():
     word_object = request.get_json()
     word = word_object['word'].lower()
-    is_in_word_list = word in word_list
 
-    return jsonify({"is_in_word_list" : is_in_word_list})
+    # Load user-added words from words.json
+    try:
+        with open('words.json') as f:
+            custom_words = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        custom_words = []
 
+    # Combine built-in and custom word lists
+    all_words = set(word_list).union(set(custom_words))
+
+    is_in_word_list = word in all_words
+
+    return jsonify({"is_in_word_list": is_in_word_list})
 
 
 
